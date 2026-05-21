@@ -70,10 +70,18 @@ def update_department(id, data):
 def delete_department(id):
     try:
         dep = Department.query.get(id)
+        
         if not dep:
             return error_response("department not found")
-        db.session.delete(id)
+        
+        if dep.employees:
+            return error_response(
+                "Cannot delete department. Employees are assigned to it."
+            )
+        
+        db.session.delete(dep)
         db.session.commit()
+        
         return success_response("department was deleted") 
     except Exception as e:
         return error_response(str(e))

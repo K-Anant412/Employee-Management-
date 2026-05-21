@@ -8,3 +8,4 @@ streamlit
 reportlab
 Flask-Mail
 pandas
+matplotlib

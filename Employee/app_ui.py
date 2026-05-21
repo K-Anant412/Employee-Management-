@@ -3,7 +3,7 @@ import requests
 import base64
 import os
 import pandas as pd
-
+import matplotlib.pyplot as plt
 AUTH_URL = "http://127.0.0.1:5001/api/v1/auth"
 
 base_url = "http://127.0.0.1:5001/api/v1"
@@ -82,31 +82,32 @@ def register_user(username, email, password, role):
 
 
 def auth_page():
-    st.title(" Employee Management System")
 
-    tab1, tab2 = st.tabs(["Login", "Register"])
+        st.title(" Employee Management System")
+        tab1, tab2 = st.tabs(["Login", "Register"])
 
-    with tab1:
-        with st.form("login_form"):
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
-            submit = st.form_submit_button("Login")
-            if submit:
-                login_user(email, password)
+        with tab1:
+            with st.form("login_form"):
+                email = st.text_input("Email")
+                password = st.text_input("Password", type="password")
+                submit = st.form_submit_button("Login")
+                if submit:
+                    login_user(email, password)
 
-    with tab2:
-        with st.form("reg_form"):
-            u_name = st.text_input("Full Name")
-            u_email = st.text_input("Email")
-            u_pass = st.text_input("Password", type="password")
-            u_role = st.selectbox("Role", ["Employee", "Admin", "Superadmin"])
-            submit_reg = st.form_submit_button("Create Account")
-            if submit_reg:
-                register_user(u_name, u_email, u_pass, u_role)
+        with tab2:
+            with st.form("reg_form"):
+                u_name = st.text_input("Full Name")
+                u_email = st.text_input("Email")
+                u_pass = st.text_input("Password", type="password")
+                u_role = st.selectbox("Role", ["Employee", "Admin", "Superadmin"])
+                submit_reg = st.form_submit_button("Create Account")
+                if submit_reg:
+                    register_user(u_name, u_email, u_pass, u_role)
 
 
 def main_dashboard():
     with st.sidebar:
+        user_name = st.session_state.user_data.get('user_name', 'User')
         st.markdown(
             f"""
             <div style="padding:15px; border-radius:10px; background-color:#f0f2f6; margin-bottom:20px; border:1px solid #d1d5db">
@@ -123,17 +124,17 @@ def main_dashboard():
             st.session_state.authenticated = False
             st.session_state.user_data = None
             st.rerun()
-    st.title(f"Welcome ")
 
     if choice == "Employee":
-        st.subheader("Employee Management")
-        tab1, tab2, tab3, tab4 = st.tabs(["Home", "Manage", "Employee List", "Search"])
+        st.title("Employee Management")
+        
         employee_url = f"{base_url}/employee"
+        tab1, tab2, tab3, tab4 = st.tabs(["Home", "Manage", "Employee List", "Search"])
 
         with tab1:
             BASE_URL = "http://127.0.0.1:5001/api/v1"
 
-            st.title("Employee Management Dashboard")
+            st.subheader("Employee Dashboard")
             st.caption("Manage employees, analytics, reports, and departments.")
 
             st.divider()
@@ -164,31 +165,55 @@ def main_dashboard():
 
             col1, col2 = st.columns(2)
             with col1:
-                st.subheader("Department Distribution")
+                st.subheader("Employee Distribution")
                 dept_data = df["department"].value_counts()
-                st.bar_chart(dept_data)
+
+                fig, ax = plt.subplots(figsize=(5, 4))
+
+                colors = [
+                        "#0F4C81",  
+                        "#1D70A2",  
+                        "#2E86C1",  
+                        "#5DADE2",  
+                        "#85C1E9",  
+                        "#AED6F1"   
+                    ]
+                
+                ax.pie(
+                    dept_data,
+                    labels=dept_data.index,
+                    autopct="%1.1f%%",
+                    startangle=90,
+                    colors=colors
+                )
+
+                ax.axis("equal")  
+                st.pyplot(fig, use_container_width=True)
             with col2:
                 st.subheader("Salary Distribution")
-                salary_data = df["salary"].astype(float)
-                st.line_chart(salary_data)
+                salary_data = df["salary"].astype(float).reset_index(drop=True)
 
-            st.divider()
+                fig, ax = plt.subplots(figsize=(6, 3.5))
 
-            st.subheader("Recently Added Employees")
-            recent_df = df.tail(5)
-            st.dataframe(recent_df, use_container_width=True)
+                ax.plot(
+                    salary_data,
+                    marker="o",
+                    linewidth=2
+                )
 
-            st.divider()
+                ax.set_title("Employee Salaries")
+                ax.set_xlabel("Employee Index")
+                ax.set_ylabel("Salary")
 
-            st.subheader("Top Paid Employees")
-            top_salary = df.sort_values(by="salary", ascending=False).head(5)
-            st.dataframe(top_salary, use_container_width=True)
+                ax.grid(True)
+
+                st.pyplot(fig, use_container_width=True)
 
         with tab2:
             st.subheader("Manage Employees")
 
             choice = st.selectbox(
-                ">",
+                "select option here",
                 options=[
                     "Add Employee",
                     "Update Employee",
@@ -227,6 +252,7 @@ def main_dashboard():
                                 st.error("Failed to add user.")
                         except Exception as e:
                             st.error(f"Server Error: {e}")
+            
             elif choice == "Update Employee":
                 emp_id = st.number_input("Employee ID", min_value=1, step=1)
                 fetch_url = f"{employee_url}/employee_by_id/{emp_id}"
@@ -271,7 +297,9 @@ def main_dashboard():
                             st.session_state.employee = params
                         else:
                             st.error(response.text)
+            
             elif choice == "Remove Employee":
+                
                 emp_id_delete = st.number_input(
                     "Employee ID",
                     min_value=0,
@@ -290,7 +318,6 @@ def main_dashboard():
 
                 if st.button("Remove"):
                     response = requests.get(url)
-                    st.write(response.status_code)
 
                     if response.status_code == 200:
                         raw_data = response.json()
@@ -342,6 +369,7 @@ def main_dashboard():
                             st.session_state.employee_data = None
                         else:
                             st.error("Delete Failed")
+                            st.write(result.json())
                                     
             elif choice == "Reports":
                 API_URL = f"{employee_url}/get_pdf_data"
@@ -362,6 +390,7 @@ def main_dashboard():
 
         with tab3:
             st.subheader("Employee List")
+            
             c1, c2 = st.columns(2)
             with c1:
                 page = st.number_input("Pages", min_value=1)
@@ -387,25 +416,82 @@ def main_dashboard():
         with tab4:
             st.subheader("Search Employee")
 
-            emp_id = st.number_input("Employee ID:", min_value=1, key="search_key")
-            employee_search_url = f"{employee_url}/employee_by_id/{emp_id}"
+            choice = st.selectbox("Menu:", options=["By ID", "By Name", "Salary Range"])
+            
+            if choice == "By ID":
+                emp_id = st.number_input("Employee ID:", min_value=1, key="search_key")
+                employee_search_url = f"{employee_url}/employee_by_id/{emp_id}"
 
-            if st.button("Search"):
-                response = requests.get(employee_search_url)
+                if st.button("Search"):
+                    response = requests.get(employee_search_url)
 
-                if response.status_code == 200:
-                    raw_data = response.json()
+                    if response.status_code == 200:
+                        raw_data = response.json()
 
-                    if "Data" in raw_data:
-                        employee = raw_data["Data"]
-                        df = pd.DataFrame([employee])
-                        st.dataframe(df, use_container_width=True, hide_index=True)
+                        if "Data" in raw_data:
+                            employee = raw_data["Data"]
+                            df = pd.DataFrame([employee])
+                            st.dataframe(df, use_container_width=True, hide_index=True)
+                        else:
+                            st.warning(f"Error: {response.json()}")
+                
+            elif choice == "By Name":
+                pass
+            
+            elif choice == "Salary Range":
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    min_salary = st.number_input(
+                        "Minimum Salary",
+                        min_value=0.0,
+                        step=1000.0
+                    )
+
+                with col2:
+                    max_salary = st.number_input(
+                        "Maximum Salary",
+                        min_value=0.0,
+                        step=1000.0
+                    )
+
+                if st.button("Search Employees"):
+                    if min_salary > max_salary:
+                        st.error("Minimum salary cannot be greater than maximum salary")
+
                     else:
-                        st.warning(f"Error: {response.json()}")
+                        try:
+                            response = requests.get(
+                                f"{employee_url}/filter_by_salary",
+                                params={
+                                    "min_salary": min_salary,
+                                    "max_salary": max_salary
+                                }
+                            )
+
+                            if response.status_code == 200:
+                                result = response.json()
+                                employees = result.get("Data", [])
+
+                                if employees:
+                                    st.success(f"{len(employees)} Employee(s) Found")
+                                    df = pd.DataFrame(employees)
+                                    st.dataframe(
+                                        df,
+                                        use_container_width=True,
+                                        hide_index=True
+                                    )
+                                else:
+                                    st.warning("No employees found in this salary range")
+                            else:
+                                st.error("Failed to fetch data")
+                        except Exception as e:
+                            st.error(str(e))
 
     elif choice == "Department":
+        st.title("Department Management")
+        
         department_url = f"{base_url}/department"
-        st.subheader("Department")
         tab1, tab2, tab3 = st.tabs(["Show All", "Manage", "Employees"])
 
         with tab1:
@@ -432,11 +518,10 @@ def main_dashboard():
                                     }
                                 )
                                 
-
         with tab2:
             dept_choice = st.selectbox(
                 "Operations:",
-                [" ", "Add Department", "Update Department", "Remove Department"],
+                ["select option here","Add Department", "Update Department", "Remove Department"],
             )
 
             if dept_choice == "Add Department":
@@ -472,28 +557,56 @@ def main_dashboard():
                 st.subheader("Remove Department")
 
                 dept_id = st.number_input(
-                    "department id", min_value=1, key="remove_dept_key"
+                    "department id", 
+                    min_value=1, 
+                    key="remove_dept_key"
                 )
+                
+                if "show_remove_section" not in st.session_state:
+                    st.session_state.show_remove_section = False
+                
+                if "department_data" not in st.session_state:
+                    st.session_state.department_data = None
+                    
                 fetch_dept = f"{base_url}/department/fetch_dept_id/{dept_id}"
+                # delete_dept_url = f"{department_url}/delete_department/{dept_id}"    
+                
                 if st.button("remove"):
                     response = requests.get(fetch_dept)
+                    
                     if response.status_code == 200:
-                        data = response.json()
-                        df = pd.DataFrame([data])
-                        st.dataframe(df, use_container_width=True, hide_index=True)
+                        raw_data = response.json()
+                        # st.write(raw_data)
+                        
+                        if raw_data:
+                            st.session_state.department_data = raw_data
+                            st.session_state.show_remove_section = True
+                        else:
+                            st.error("Department not found")
+                            
+                if st.session_state.show_remove_section:
+                    department = st.session_state.department_data
+                    
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        st.text_input("Department ID", value=department.get("ID", ""), disabled=True)
+                    with c2:
+                        st.text_input("Name", value=department.get("Name", ""), disabled=True)
+                            
+                    if st.button("Delete"):
                         delete_dept_url = (
-                            f"{department_url}/delete_department/{dept_id}"
-                        )
-
-                        if st.button("Delete"):
-
-                            result = requests.delete(delete_dept_url)
-                            if result.status_code == 200:
-                                st.success("This Department is no longer Used")
-                            else:
-                                st.warning("Server Error")
-                                st.write(result.json())
-
+                                            f"{department_url}/delete_department/{department['ID']}"
+                                        )
+                        result = requests.delete(delete_dept_url)
+                        
+                        if result.status_code == 200:
+                            st.success("This Department is no longer Used")
+                            st.session_state.show_remove_section = False
+                            st.session_state.department_data = None
+                        else:
+                            st.warning("Server Error")
+                            st.write(result.json())
+                            
         with tab3:
             st.subheader("Department Dashboard")
 
@@ -528,7 +641,7 @@ def main_dashboard():
                 st.error("Failed to load dashboard")
 
     elif choice == "Attendance":
-        st.subheader("Employee Attendance")
+        st.title("Attendance Tracker")
         
         try:
             response = requests.get(f"{base_url}/attendance/employees")
@@ -608,8 +721,7 @@ def main_dashboard():
                 st.error(f"Failed to submit attendance: {e}")
 
     elif choice == "Salary":
-        st.subheader("Salary Analysis")
-        st.subheader("Payroll Management")
+        st.title("Salary Analysis")
 
         tab1, tab2, tab3 = st.tabs(["Generate Payroll", "View Payroll", "Yearly Bonus"])
 

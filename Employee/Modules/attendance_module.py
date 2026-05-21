@@ -45,8 +45,3 @@ class Attendance(db.Model):
         db.Float,
         default=0
     )
-
-    # employee = db.relationship(
-    #     "Employee",
-    #     backref="attendances"
-    # )

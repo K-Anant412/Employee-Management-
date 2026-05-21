@@ -4,7 +4,6 @@ from flask_restx import Api
 from config import config
 from DataBase.database import db
 
-# from Routes folder import custom route 
 from Routes.auth_route import auth_routes
 from Routes.employee import employee_route
 from Routes.department import department_routes
@@ -20,7 +19,6 @@ app = Flask(__name__)
 CORS(app)
 mail.init_app(app)
 
-# for database connection
 app.config.from_object(config) 
 app.secret_key = "myProject123SessionKey"
 db.init_app(app)

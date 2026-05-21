@@ -34,9 +34,9 @@ class fetch_dept(Resource):
     @department_routes.param("id", "department_id", _in="path", required=True)
     def get(self, id):
         return fetch_department(id)
-@department_routes.route("/delete_department/<int:id>")
+@department_routes.route("/delete_department/<int:id>", methods=["DELETE"])
 class remove_dep(Resource):
     @department_routes.param("id", "department_id", _in="path", required=True)
-    @check_role(["superadmin"])
+    # @check_role(["superadmin"])
     def delete(self, id):
         return delete_department(id)
