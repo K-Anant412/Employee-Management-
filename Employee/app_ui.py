@@ -492,9 +492,9 @@ def main_dashboard():
         st.title("Department Management")
         
         department_url = f"{base_url}/department"
-        tab1, tab2, tab3 = st.tabs(["Show All", "Manage", "Employees"])
+        tab1, tab2, tab3 = st.tabs(["Employees", "Manage", "Show All"])
 
-        with tab1:
+        with tab3:
             show_url = f"{department_url}/show_department"
             response = requests.get(show_url)
             
@@ -607,7 +607,7 @@ def main_dashboard():
                             st.warning("Server Error")
                             st.write(result.json())
                             
-        with tab3:
+        with tab1:
             st.subheader("Department Dashboard")
 
             department_dashboard_url = f"{department_url}/employww_per_deptartment"
@@ -766,7 +766,6 @@ def main_dashboard():
 
                         st.divider()
                         st.metric("Final Salary", f"₹ {data.get('Final Salary', 0)}")
-                        st.balloons()
 
                     else:
                         st.error(result.get("Message", "Failed to generate payroll"))
