@@ -81,22 +81,14 @@ def sort_emp(page=1, per_page=5):
     except Exception as e:
         return error_response(str(e))
     
-def search_emp(**kwargs):
-    emp = db.select(Employee)
+def search_emp_by_name(name):
+    # Base query for Employee
+    stmt = db.select(Employee).filter(Employee.name.like(f"%{name}%"))
     
-    if kwargs.get("id"):
-        emp = emp.filter(Employee.id == kwargs["id"])
-    if kwargs.get("name"):
-        emp = emp.filter(Employee.name.like(f"%{kwargs['name']}%"))
-    if kwargs.get("city"):
-        emp = emp.filter(Employee.city == kwargs["city"])
-    if kwargs.get("department"):
-        emp = emp.join(Department).filter(Department.name == kwargs['department'])
-    
-    result = db.session.execute(emp).scalars().all()
+    result = db.session.execute(stmt).scalars().all()
     
     if not result:
-        return error_response("No employees found matching criteria", 404)
+        return error_response(f"No employees found matching standard name: '{name}'", 404)
     
     output = []
     for item in result:
@@ -107,7 +99,7 @@ def search_emp(**kwargs):
             "Department": item.department.name if item.department else "No Department"
         })
         
-    return success_response(output)
+    return success_response(message="Employees fetched successfully", data=output)
     
 def get_emp_by_id(id):
     emp = db.session.get(Employee, id)

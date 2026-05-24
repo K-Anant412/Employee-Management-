@@ -4,7 +4,7 @@ from werkzeug.datastructures import FileStorage
 from Utils.Check_role import check_role
 from Services.employee_service import (
     create_employee,
-    search_emp,
+    search_emp_by_name,
     get_all_employees,
     get_emp_by_id,
     update_emp_by_id,
@@ -79,19 +79,20 @@ class sort_employee(Resource):
         return sort_emp(page=page, per_page=per_page)
 
 
-@employee_route.route("/get_emp", methods=["GET"])
-class search(Resource):
+@employee_route.route("/search_by_name", methods=["GET"])
+class SearchByName(Resource):
     @employee_route.doc(
         params={
-            "id": "Employee ID",
-            "name": "Employee name",
-            "city": "Employee city",
-            "department": "Employee department",
+            "name": "Employee name or part of the name to search for"
         }
     )
     def get(self):
-        data = request.args.to_dict()
-        return search_emp(**data)
+        name = request.args.get("name", "").strip()
+        
+        if not name:
+            return error_response("Name parameter is required", 400)
+            
+        return search_emp_by_name(name)
 
 
 @employee_route.route("/employee_by_id/<int:id>")  # show employee by ID__
