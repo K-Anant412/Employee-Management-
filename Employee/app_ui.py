@@ -41,13 +41,11 @@ if os.path.exists(path_to_img):
         unsafe_allow_html=True,
     )
 
-
 def init_session():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
     if "user_data" not in st.session_state:
         st.session_state.user_data = None
-
 
 def login_user(email, password):
     try:
@@ -62,7 +60,6 @@ def login_user(email, password):
             st.error("Invalid credentials")
     except Exception as e:
         st.error(f"Connection Error: {e}")
-
 
 def register_user(username, email, password, role):
     payload = {
@@ -80,27 +77,18 @@ def register_user(username, email, password, role):
     except Exception as e:
         st.error(f"Connection Error: {e}")
 
-
-import streamlit as st
-
-import streamlit as st
-
 def auth_page():
-    # 1. Custom CSS Injector for Layout and Scoping
     st.markdown("""
     <style>
-    /* Global App Container Adjustment */
     .block-container {
         padding-top: 5rem;
         padding-bottom: 3rem;
-        /* Let the main page expand naturally so tabs and titles breathe */
         max-width: 100% !important; 
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    /* ===== Title Header Stylings ===== */
     .header-container {
         text-align: center;
         margin-bottom: 2rem;
@@ -108,7 +96,7 @@ def auth_page():
     }
     
     .main-title {
-        font-size: 36px; /* Slightly larger for emphasis */
+        font-size: 36px;
         font-weight: 800;
         color: #1b2b42;
         letter-spacing: -1px;
@@ -121,11 +109,9 @@ def auth_page():
         font-weight: 500;
     }
 
-    /* ===== Tab Customizations ===== */
-    /* Target the wrapper of the tabs to center them comfortably */
     .stTabs {
         width: 100% !important;
-        max-width: 480px !important; /* Matches the form width perfectly */
+        max-width: 480px !important; 
         margin: 0 auto;
     }
 
@@ -139,7 +125,7 @@ def auth_page():
     .stTabs [data-baseweb="tab"] {
         background: rgba(255, 255, 255, 0.5) !important;
         border-radius: 12px !important;
-        padding: 12px 36px !important; /* Wider tabs for easier clicking */
+        padding: 12px 36px !important; 
         font-size: 16px !important;
         font-weight: 600 !important;
         color: #4a5568 !important;
@@ -152,11 +138,9 @@ def auth_page():
         box-shadow: 0 4px 12px rgba(27, 43, 66, 0.15) !important;
     }
 
-    /* ===== Glassmorphism Form Container ===== */
-    /* Gives the login box a perfectly clear, standard desktop width */
     div[data-testid="stForm"] {
         width: 100% !important;
-        max-width: 480px !important; /* Set to a highly readable standard login width */
+        max-width: 480px !important; 
         margin: 0 auto !important;
         background: rgba(255, 255, 255, 0.25) !important;
         border: 1px solid rgba(255, 255, 255, 0.4) !important;
@@ -167,7 +151,6 @@ def auth_page():
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
     }
 
-    /* ===== Input Field Fixes ===== */
     .stTextInput label, .stSelectbox label {
         font-size: 15px !important;
         font-weight: 600 !important;
@@ -176,7 +159,7 @@ def auth_page():
     }
 
     .stTextInput input, div[data-baseweb="select"] {
-        height: 50px !important; /* Slightly taller for a premium feel */
+        height: 50px !important; 
         border-radius: 12px !important;
         background: rgba(255, 255, 255, 0.6) !important;
         border: 1px solid rgba(0, 0, 0, 0.1) !important;
@@ -189,7 +172,6 @@ def auth_page():
         box-shadow: 0 0 0 1px #1b2b42 !important;
     }
 
-    /* Form Inner Markdown Headings */
     .form-heading {
         font-size: 24px;
         font-weight: 700;
@@ -197,7 +179,6 @@ def auth_page():
         margin-bottom: 1.5rem;
     }
 
-    /* ===== Unified Buttons ===== */
     .stButton > button, .stFormSubmitButton > button {
         width: 100% !important;
         height: 50px !important;
@@ -221,7 +202,6 @@ def auth_page():
     </style>
     """, unsafe_allow_html=True)
 
-    # 2. Header
     st.markdown("""
         <div class="header-container">
             <div class="main-title">Employee Management System</div>
@@ -229,7 +209,7 @@ def auth_page():
         </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["🔒 Login", "📝 Register"])
+    tab1, tab2 = st.tabs(["Login", "Register"])
 
     with tab1:
         with st.form("login_form", clear_on_submit=False):
@@ -256,10 +236,8 @@ def auth_page():
                 register_user(u_name, u_email, u_pass, u_role)
                 st.success("Registered!")
 
-
 def main_dashboard():
     with st.sidebar:
-        user_name = st.session_state.user_data.get('user_name', 'User')
         st.markdown(
             f"""
             <div style="padding:15px; border-radius:10px; background-color:#f0f2f6; margin-bottom:20px; border:1px solid #d1d5db">
@@ -1247,7 +1225,6 @@ def main_dashboard():
             dept_choice = st.selectbox(
                 "Select Action",
                 [
-                    "Select Option",
                     "Add Department",
                     "Update Department",
                     "Remove Department"
@@ -1290,13 +1267,8 @@ def main_dashboard():
                             f"{name} department added"
                         )
                     else:
-                        st.error(
-                            "Server Error"
-                        )
-                        st.write(
-                            response.json()
-                        )
-
+                        st.error( "Server Error")
+                        st.write( response.json() )
                 st.markdown(
                     "</div>",
                     unsafe_allow_html=True
@@ -1647,7 +1619,6 @@ def main_dashboard():
             unsafe_allow_html=True
         )
 
-        # Header row
         h1, h2, h3, h4 = st.columns(
             [0.8, 2, 2, 2]
         )
@@ -1665,10 +1636,7 @@ def main_dashboard():
             st.markdown("**Status**")
 
         st.divider()
-
-        # ==========================
-        # FORM
-        # ==========================
+        
         with st.form(
             "attendance_form"
         ):
@@ -1726,18 +1694,13 @@ def main_dashboard():
             unsafe_allow_html=True
         )
 
-        # ==========================
-        # SUBMIT
-        # ==========================
         if submit:
-
             success_count = 0
             failed_count = 0
 
             try:
 
                 for record in attendance_records:
-
                     response = requests.post(
                         f"{base_url}/attendance/mark",
                         json={
@@ -1782,129 +1745,494 @@ def main_dashboard():
                 st.error(str(e))
 
     elif choice == "Salary":
-        st.title("Salary Analysis")
 
-        tab1, tab2, tab3 = st.tabs(["Generate Payroll", "View Payroll", "Yearly Bonus"])
+                st.markdown("""
+                <style>
 
-        with tab1:
-            st.markdown("### Generate Monthly Payroll")
+                .salary-title{
+                    font-size:42px;
+                    font-weight:700;
+                    color:gray;
+                    margin-bottom:10px;
+                }
+                .glass-card{
+                    background: rgba(255,255,255,0.10);
+                    border:1px solid rgba(255,255,255,0.20);
+                    backdrop-filter: blur(18px);
+                    border-radius:25px;
+                    padding:30px;
+                    box-shadow:0 8px 32px rgba(0,0,0,0.15);
+                    margin-top:20px;
+                }
 
-            employee_id = st.number_input(
-                "Enter Employee ID", min_value=1, step=1, key="generate_payroll"
-            )
+                .metric-card{
+                    background: rgba(255,255,255,0.08);
+                    border:1px solid rgba(255,255,255,0.12);
+                    padding:18px;
+                    border-radius:18px;
+                    text-align:center;
+                    backdrop-filter: blur(10px);
+                    transition:0.3s ease;
+                    margin-bottom:15px;
+                }
 
-            if st.button("Generate Payroll", use_container_width=True):
+                .metric-card:hover{
+                    transform: translateY(-3px);
+                    box-shadow:0px 8px 20px rgba(0,0,0,0.20);
+                }
 
-                try:
-                    response = requests.post(
-                        f"{base_url}/payroll/generate/{employee_id}"
+                .metric-title{
+                    font-size:14px;
+                    color:black;
+                    opacity:0.8;
+                }
+
+                .metric-value{
+                    font-size:26px;
+                    font-weight:bold;
+                    color:gray;
+                    margin-top:8px;
+                }
+
+                .salary-box{
+                    background: linear-gradient(
+                        135deg,
+                        rgba(0,191,255,0.25),
+                        rgba(173,216,230,0.10)
+                    );
+                    border:1px solid rgba(255,255,255,0.20);
+                    border-radius:22px;
+                    padding:30px;
+                    text-align:center;
+                    margin-top:25px;
+                }
+
+                .salary-text{
+                    font-size:18px;
+                    color:#d9f2ff;
+                }
+
+                .salary-amount{
+                    font-size:42px;
+                    font-weight:800;
+                    color:gray;
+                    margin-top:10px;
+                }
+
+                </style>
+                """, unsafe_allow_html=True)
+
+                st.markdown(
+                    '<div class="salary-title">Salary Analysis</div>',
+                    unsafe_allow_html=True
+                )
+
+                tab1, tab2, tab3 = st.tabs(
+                    ["Generate Payroll", "View Payroll", "Yearly Bonus"]
+                )
+
+                with tab1:
+
+                    st.markdown("""
+                    <div class="glass-card">
+                        <h3 style="color:white;">
+                            Generate Monthly Payroll
+                        </h3>
+                    """, unsafe_allow_html=True)
+
+                    employee_id = st.number_input(
+                        "Enter Employee ID",
+                        min_value=1,
+                        step=1,
+                        key="generate_payroll"
                     )
-                    result = response.json()
 
-                    if response.status_code in [200, 201]:
-                        data = result.get("Data", {})
-                        st.success(
-                            result.get("Message", "Payroll generated successfully")
-                        )
+                    if st.button(
+                        "Generate Payroll",
+                        use_container_width=True
+                    ):
 
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.metric("Employee", data.get("Employee Name", "N/A"))
-                            st.metric("Department", data.get("Department", "N/A"))
-                            st.metric(
-                                "Monthly Salary", f"₹ {data.get('Monthly Salary', 0)}"
-                            )
-                            st.metric(
-                                "Attendance %",
-                                f"{data.get('Attendance Percentage', 0)}%",
+                        try:
+                            response = requests.post(
+                                f"{base_url}/payroll/generate/{employee_id}"
                             )
 
-                        with col2:
-                            st.metric("Present Days", data.get("Present Days", 0))
-                            st.metric("Absent Days", data.get("Absent Days", 0))
-                            st.metric("Half Days", data.get("Half Days", 0))
-                            st.metric("Bonus", f"₹ {data.get( 'Bonus', 0)}")
+                            result = response.json()
 
-                        st.divider()
-                        st.metric("Final Salary", f"₹ {data.get('Final Salary', 0)}")
+                            if response.status_code in [200, 201]:
 
-                    else:
-                        st.error(result.get("Message", "Failed to generate payroll"))
+                                data = result.get("Data", {})
 
-                except Exception as e:
-                    st.error(str(e))
+                                st.success(
+                                    result.get(
+                                        "Message",
+                                        "Payroll generated successfully"
+                                    )
+                                )
 
-        with tab2:
-            st.markdown("### View Employee Payroll")
+                                col1, col2 = st.columns(2)
 
-            employee_id = st.number_input(
-                "Enter Employee ID", min_value=1, step=1, key="view_payroll"
-            )
+                                with col1:
 
-            if st.button("Fetch Payroll", use_container_width=True):
+                                    st.markdown(f"""
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Employee
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Employee Name","N/A")}
+                                        </div>
+                                    </div>
 
-                try:
-                    response = requests.get(f"{base_url}/payroll/employee/{employee_id}")
-                    result = response.json()
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Department
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Department","N/A")}
+                                        </div>
+                                    </div>
 
-                    if response.status_code == 200:
-                        data = result.get("Data", {})
-                        st.success( result.get("Message", "Payroll fetched successfully") )
-                        col1, col2 = st.columns(2)
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Monthly Salary
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Monthly Salary",0)}
+                                        </div>
+                                    </div>
 
-                        with col1:
-                            st.metric("Employee", data.get("Employee Name", "N/A"))
-                            st.metric("Department", data.get("Department", "N/A"))
-                            st.metric("Month", data.get("Month", "N/A"))
-                        with col2:
-                            st.metric("Salary", f"₹ {data.get('Total Salary', 0)}")
-                            st.metric( "Deduction", f"₹ {data.get('Total Deduction', 0)}" )
-                            st.metric("Bonus", f"₹ {data.get('Bonus', 0)}")
-                        st.divider()
-                        st.metric("Final Salary", f"₹ {data.get('Final Salary', 0)}")
-                        
-                    else:
-                        st.error(result.get("Message", "Payroll not found"))
-                        
-                except Exception as e:
-                    st.error(str(e))
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Attendance %
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Attendance Percentage",0)}%
+                                        </div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
 
-        with tab3:
-            st.markdown("### Yearly Bonus Report")
-            employee_id = st.number_input( "Enter Employee ID", min_value=1, step=1, key="yearly_bonus" )
+                                with col2:
 
-            if st.button("Fetch Bonus Report", use_container_width=True):
-                try:
-                    response = requests.get( f"{base_url}/payroll/yearly_bonus/{employee_id}" )
-                    result = response.json()
+                                    st.markdown(f"""
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Present Days
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Present Days",0)}
+                                        </div>
+                                    </div>
 
-                    if response.status_code == 200:
-                        data = result.get("Data", {})
-                        st.success(result.get("Message", "Bonus report fetched"))
-                        
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.metric("Employee", data.get("Employee Name", "N/A"))
-                            st.metric("Department", data.get("Department", "N/A"))
-                        with col2:
-                            st.metric( "Total Yearly Bonus", f"₹ {data.get('Total Yearly Bonus', 0)}",)
-                            st.metric( "Total Yearly Salary", f"₹ {data.get('Total Yearly Salary', 0)}",)
-                        st.divider()
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Absent Days
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Absent Days",0)}
+                                        </div>
+                                    </div>
 
-                        st.subheader("Monthly Payroll History")
-                        monthly_reports = data.get("Monthly Reports", [])
-                        
-                        if monthly_reports:
-                            df = pd.DataFrame(monthly_reports)
-                            st.dataframe(df, use_container_width=True, hide_index=True)
-                        else:
-                            st.warning("No payroll history found")
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Half Days
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Half Days",0)}
+                                        </div>
+                                    </div>
 
-                    else:
-                        st.error(result.get("Message", "Failed to fetch report"))
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Bonus
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Bonus",0)}
+                                        </div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
 
-                except Exception as e:
-                    st.error(str(e))
+                                st.markdown(f"""
+                                <div class="salary-box">
+                                    <div class="salary-text">
+                                        Final Salary
+                                    </div>
+                                    <div class="salary-amount">
+                                        ₹ {data.get("Final Salary",0)}
+                                    </div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                            else:
+                                st.error(
+                                    result.get(
+                                        "Message",
+                                        "Failed to generate payroll"
+                                    )
+                                )
+
+                        except Exception as e:
+                            st.error(str(e))
+
+                    st.markdown("</div>", unsafe_allow_html=True)
+                         
+                with tab2:
+
+                    st.markdown("""
+                    <div class="glass-card">
+                        <h3 style="color:white;">
+                            View Employee Payroll
+                        </h3>
+                    """, unsafe_allow_html=True)
+
+                    employee_id = st.number_input(
+                        "Enter Employee ID",
+                        min_value=1,
+                        step=1,
+                        key="view_payroll"
+                    )
+
+                    if st.button(
+                        "Fetch Payroll",
+                        use_container_width=True
+                    ):
+
+                        try:
+
+                            response = requests.get(
+                                f"{base_url}/payroll/employee/{employee_id}"
+                            )
+
+                            result = response.json()
+
+                            if response.status_code == 200:
+
+                                data = result.get("Data", {})
+
+                                st.success(
+                                    result.get(
+                                        "Message",
+                                        "Payroll fetched successfully"
+                                    )
+                                )
+
+                                col1, col2 = st.columns(2)
+
+                                with col1:
+
+                                    st.markdown(f"""
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Employee
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Employee Name","N/A")}
+                                        </div>
+                                    </div>
+
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Department
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Department","N/A")}
+                                        </div>
+                                    </div>
+
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Month
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Month","N/A")}
+                                        </div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+
+                                with col2:
+
+                                    st.markdown(f"""
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Salary
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Total Salary",0)}
+                                        </div>
+                                    </div>
+
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Deduction
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Total Deduction",0)}
+                                        </div>
+                                    </div>
+
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Bonus
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Bonus",0)}
+                                        </div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+
+                                st.markdown(f"""
+                                <div class="salary-box">
+                                    <div class="salary-text">
+                                        Final Salary
+                                    </div>
+                                    <div class="salary-amount">
+                                        ₹ {data.get("Final Salary",0)}
+                                    </div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                            else:
+                                st.error(
+                                    result.get(
+                                        "Message",
+                                        "Payroll not found"
+                                    )
+                                )
+
+                        except Exception as e:
+                            st.error(str(e))
+
+                    st.markdown("</div>", unsafe_allow_html=True)
+
+                with tab3:
+
+                    st.markdown("""
+                    <div class="glass-card">
+                        <h3 style="color:white;">
+                            Yearly Bonus Report
+                        </h3>
+                    """, unsafe_allow_html=True)
+
+                    employee_id = st.number_input(
+                        "Enter Employee ID",
+                        min_value=1,
+                        step=1,
+                        key="yearly_bonus"
+                    )
+
+                    if st.button(
+                        "Fetch Bonus Report",
+                        use_container_width=True
+                    ):
+
+                        try:
+
+                            response = requests.get(
+                                f"{base_url}/payroll/yearly_bonus/{employee_id}"
+                            )
+
+                            result = response.json()
+
+                            if response.status_code == 200:
+
+                                data = result.get("Data", {})
+
+                                st.success(
+                                    result.get(
+                                        "Message",
+                                        "Bonus report fetched"
+                                    )
+                                )
+
+                                col1, col2 = st.columns(2)
+
+                                with col1:
+
+                                    st.markdown(f"""
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Employee
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Employee Name","N/A")}
+                                        </div>
+                                    </div>
+
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Department
+                                        </div>
+                                        <div class="metric-value">
+                                            {data.get("Department","N/A")}
+                                        </div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+
+                                with col2:
+
+                                    st.markdown(f"""
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Total Yearly Bonus
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Total Yearly Bonus",0)}
+                                        </div>
+                                    </div>
+
+                                    <div class="metric-card">
+                                        <div class="metric-title">
+                                            Total Yearly Salary
+                                        </div>
+                                        <div class="metric-value">
+                                            ₹ {data.get("Total Yearly Salary",0)}
+                                        </div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+
+                                st.markdown(
+                                    """
+                                    <h3 style="color:white; margin-top:30px;">
+                                        Monthly Payroll History
+                                    </h3>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+
+                                monthly_reports = data.get(
+                                    "Monthly Reports",
+                                    []
+                                )
+
+                                if monthly_reports:
+
+                                    df = pd.DataFrame(
+                                        monthly_reports
+                                    )
+
+                                    st.dataframe(
+                                        df,
+                                        use_container_width=True,
+                                        hide_index=True
+                                    )
+
+                                else:
+                                    st.warning(
+                                        "No payroll history found"
+                                    )
+
+                            else:
+                                st.error(
+                                    result.get(
+                                        "Message",
+                                        "Failed to fetch report"
+                                    )
+                                )
+
+                        except Exception as e:
+                            st.error(str(e))
+
+                    st.markdown("</div>", unsafe_allow_html=True)
 
 init_session()
 
