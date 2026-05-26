@@ -4,11 +4,13 @@ import base64
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+
 AUTH_URL = "http://127.0.0.1:5001/api/v1/auth"
 
 base_url = "http://127.0.0.1:5001/api/v1"
 
 st.set_page_config(page_title="Employee Dashboard", layout="wide")
+
 
 def get_base64(bin_file):
     with open(bin_file, "rb") as f:
@@ -41,11 +43,13 @@ if os.path.exists(path_to_img):
         unsafe_allow_html=True,
     )
 
+
 def init_session():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
     if "user_data" not in st.session_state:
         st.session_state.user_data = None
+
 
 def login_user(email, password):
     try:
@@ -60,6 +64,7 @@ def login_user(email, password):
             st.error("Invalid credentials")
     except Exception as e:
         st.error(f"Connection Error: {e}")
+
 
 def register_user(username, email, password, role):
     payload = {
@@ -77,8 +82,10 @@ def register_user(username, email, password, role):
     except Exception as e:
         st.error(f"Connection Error: {e}")
 
+
 def auth_page():
-    st.markdown("""
+    st.markdown(
+        """
     <style>
     .block-container {
         padding-top: 5rem;
@@ -200,41 +207,59 @@ def auth_page():
     }
 
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
-    st.markdown("""
+    st.markdown(
+        """
         <div class="header-container">
             <div class="main-title">Employee Management System</div>
             <div class="subtitle">Access your corporate dashboard portal</div>
         </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     tab1, tab2 = st.tabs(["Login", "Register"])
 
     with tab1:
         with st.form("login_form", clear_on_submit=False):
-            st.markdown('<div class="form-heading">Welcome Back</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="form-heading">Welcome Back</div>', unsafe_allow_html=True
+            )
 
             email = st.text_input("Email Address", placeholder="name@company.com")
-            password = st.text_input("Password", type="password", placeholder="••••••••")
+            password = st.text_input(
+                "Password", type="password", placeholder="••••••••"
+            )
             submit = st.form_submit_button("Sign In")
 
             if submit:
-                 login_user(email, password)
+                login_user(email, password)
 
     with tab2:
         with st.form("reg_form", clear_on_submit=False):
-            st.markdown('<div class="form-heading">Create Account</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="form-heading">Create Account</div>', unsafe_allow_html=True
+            )
 
             u_name = st.text_input("Full Name", placeholder="user")
-            u_email = st.text_input("Work Email Address", placeholder="name@company.com")
-            u_pass = st.text_input("Password", type="password", placeholder="Minimum 8 characters")
-            u_role = st.selectbox("Organizational Role", ["Employee", "Admin", "Superadmin"])
+            u_email = st.text_input(
+                "Work Email Address", placeholder="name@company.com"
+            )
+            u_pass = st.text_input(
+                "Password", type="password", placeholder="Minimum 6 characters"
+            )
+            u_role = st.selectbox(
+                "Organizational Role", ["employee", "admin", "superadmin"]
+            )
             submit_reg = st.form_submit_button("Create Account")
 
             if submit_reg:
                 register_user(u_name, u_email, u_pass, u_role)
                 st.success("Registered!")
+
 
 def main_dashboard():
     with st.sidebar:
@@ -256,7 +281,7 @@ def main_dashboard():
             st.rerun()
 
     if choice == "Employee":
-        
+
         employee_url = f"{base_url}/employee"
         tab1, tab2, tab3, tab4 = st.tabs(["Home", "Manage", "Employee List", "Search"])
 
@@ -266,15 +291,14 @@ def main_dashboard():
             st.title("Employee Dashboard")
             st.caption("Manage employees, analytics, reports, and departments.")
 
-            response = requests.get(
-                f"{BASE_URL}/employee/show_all_employees"
-            )
+            response = requests.get(f"{BASE_URL}/employee/show_all_employees")
 
             data = response.json()
             employees = data.get("Data", [])
             df = pd.DataFrame(employees)
 
-            st.markdown("""
+            st.markdown(
+                """
             <style>
 
             div[data-testid="stMetric"]{
@@ -296,7 +320,9 @@ def main_dashboard():
             }
 
             </style>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 
             if not df.empty:
 
@@ -321,14 +347,10 @@ def main_dashboard():
 
                 st.markdown("<br>", unsafe_allow_html=True)
 
-
                 col1, col2 = st.columns(2)
                 with col1:
 
-                    st.markdown(
-                        '<div class="chart-card">',
-                        unsafe_allow_html=True
-                    )
+                    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
 
                     st.subheader("Employee Distribution")
 
@@ -342,7 +364,7 @@ def main_dashboard():
                         "#2E86C1",
                         "#5DADE2",
                         "#85C1E9",
-                        "#AED6F1"
+                        "#AED6F1",
                     ]
 
                     fig.patch.set_alpha(0)
@@ -354,13 +376,8 @@ def main_dashboard():
                         autopct="%1.1f%%",
                         startangle=90,
                         colors=colors,
-                        wedgeprops={
-                            "edgecolor": "white",
-                            "linewidth": 1
-                        },
-                        textprops={
-                            "fontsize": 12
-                        }
+                        wedgeprops={"edgecolor": "white", "linewidth": 1},
+                        textprops={"fontsize": 12},
                     )
 
                     ax.axis("equal")
@@ -371,41 +388,22 @@ def main_dashboard():
 
                 with col2:
 
-                    st.markdown(
-                        '<div class="chart-card">',
-                        unsafe_allow_html=True
-                    )
+                    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
 
                     st.subheader("Salary Distribution")
 
-                    salary_data = (
-                        df["salary"]
-                        .astype(float)
-                        .reset_index(drop=True)
-                    )
+                    salary_data = df["salary"].astype(float).reset_index(drop=True)
 
                     fig, ax = plt.subplots(figsize=(6, 4))
 
                     fig.patch.set_alpha(0)
                     ax.set_facecolor("none")
 
-                    ax.plot(
-                        salary_data,
-                        marker="o",
-                        linewidth=2.5
-                    )
+                    ax.plot(salary_data, marker="o", linewidth=2.5)
 
-                    ax.fill_between(
-                        range(len(salary_data)),
-                        salary_data,
-                        alpha=0.2
-                    )
+                    ax.fill_between(range(len(salary_data)), salary_data, alpha=0.2)
 
-                    ax.set_title(
-                        "Employee Salaries",
-                        fontsize=18,
-                        pad=15
-                    )
+                    ax.set_title("Employee Salaries", fontsize=18, pad=15)
 
                     ax.set_xlabel("Employee Index")
                     ax.set_ylabel("Salary")
@@ -413,10 +411,7 @@ def main_dashboard():
                     ax.spines["top"].set_visible(False)
                     ax.spines["right"].set_visible(False)
 
-                    ax.grid(
-                        alpha=0.25,
-                        linestyle="--"
-                    )
+                    ax.grid(alpha=0.25, linestyle="--")
 
                     st.pyplot(fig, use_container_width=True)
 
@@ -425,7 +420,8 @@ def main_dashboard():
         with tab2:
             st.title("Employee Management")
 
-            st.markdown("""
+            st.markdown(
+                """
                     <style>
 
                     .glass-card{
@@ -478,8 +474,10 @@ def main_dashboard():
                     }
 
                     </style>
-                    """, unsafe_allow_html=True)
-            
+                    """,
+                unsafe_allow_html=True,
+            )
+
             choice = st.selectbox(
                 "select option here",
                 options=[
@@ -489,16 +487,16 @@ def main_dashboard():
                     "Reports",
                 ],
             )
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
             if choice == "Add Employee":
 
                 st.markdown(
                     '<div class="glass-card">'
                     '<div class="section-title">'
-                    'Add Employee'
-                    '</div>',
-                    unsafe_allow_html=True
+                    "Add Employee"
+                    "</div>",
+                    unsafe_allow_html=True,
                 )
 
                 with st.form("add_form"):
@@ -506,35 +504,20 @@ def main_dashboard():
                     c1, c2 = st.columns(2)
 
                     with c1:
-                        name = st.text_input(
-                            "Name",
-                            placeholder="Enter employee name"
-                        )
+                        name = st.text_input("Name", placeholder="Enter employee name")
 
-                        city = st.text_input(
-                            "City",
-                            placeholder="Enter city"
-                        )
+                        city = st.text_input("City", placeholder="Enter city")
 
-                        salary = st.number_input(
-                            "Salary",
-                            min_value=0
-                        )
+                        salary = st.number_input("Salary", min_value=0)
 
                     with c2:
-                        email = st.text_input(
-                            "Email",
-                            placeholder="example@gmail.com"
-                        )
+                        email = st.text_input("Email", placeholder="example@gmail.com")
 
                         department = st.text_input(
-                            "Department",
-                            placeholder="HR / IT / Finance"
+                            "Department", placeholder="HR / IT / Finance"
                         )
 
-                    submit = st.form_submit_button(
-                        "Add Employee"
-                    )
+                    submit = st.form_submit_button("Add Employee")
 
                     if submit:
 
@@ -548,70 +531,56 @@ def main_dashboard():
 
                         try:
                             response = requests.post(
-                                f"{employee_url}/add_employee",
-                                json=data
+                                f"{employee_url}/add_employee", json=data
                             )
 
                             if response.status_code == 200:
-                                st.success(
-                                    "Employee added successfully"
-                                )
+                                st.success("Employee added successfully")
                             else:
-                                st.error(
-                                    "Failed to add employee"
-                                )
+                                st.error("Failed to add employee")
 
                         except Exception as e:
-                            st.error(
-                                f"Server Error: {e}"
-                            )
+                            st.error(f"Server Error: {e}")
 
-                st.markdown('</div>', unsafe_allow_html=True)
-            
+                st.markdown("</div>", unsafe_allow_html=True)
+
             elif choice == "Update Employee":
 
                 st.markdown(
                     '<div class="glass-card">'
                     '<div class="section-title">'
-                    'Update Employee'
-                    '</div>',
-                    unsafe_allow_html=True
+                    "Update Employee"
+                    "</div>",
+                    unsafe_allow_html=True,
                 )
 
-                emp_id = st.number_input(
-                    "Employee ID",
-                    min_value=1,
-                    step=1
-                )
-    
+                emp_id = st.number_input("Employee ID", min_value=1, step=1)
+
                 fetch_url = f"{employee_url}/employee_by_id/{emp_id}"
                 update_url = f"{employee_url}/update_employee/{emp_id}"
 
                 if st.button("Fetch Employee"):
                     response = requests.get(fetch_url)
-                    
+
                     if response.status_code == 200:
                         raw_data = response.json()
-                        
+
                         if "Data" in raw_data:
                             st.session_state.employee = raw_data["Data"]
                         else:
                             st.error("Employee data not found")
-                            
+
                     else:
                         st.error("Employee not found")
 
                 if "employee" in st.session_state:
-                    
-                    st.markdown(
-                        "<hr>",
-                        unsafe_allow_html=True
-                    )
+
+                    st.markdown("<hr>", unsafe_allow_html=True)
 
                     st.subheader("Employee Details")
-                    
+
                     employee = st.session_state.employee
-                    
+
                     c1, c2 = st.columns(2)
                     with c1:
                         name = st.text_input("Name", value=employee.get("name", ""))
@@ -626,7 +595,7 @@ def main_dashboard():
                         )
 
                     if st.button("Save Changes"):
-                        
+
                         params = {
                             "name": name,
                             "city": city,
@@ -634,29 +603,27 @@ def main_dashboard():
                             "salary": salary,
                             "department": department,
                         }
-                        
+
                         response = requests.put(update_url, json=params)
-                        
+
                         if response.status_code == 200:
                             st.success("Employee information was Updated")
                             st.session_state.employee = params
                         else:
                             st.error(response.text)
-            
+
             elif choice == "Remove Employee":
-                
+
                 st.markdown(
                     '<div class="glass-card">'
                     '<div class="section-title">'
-                    'Remove Employee'
-                    '</div>',
-                    unsafe_allow_html=True
+                    "Remove Employee"
+                    "</div>",
+                    unsafe_allow_html=True,
                 )
-                
+
                 emp_id_delete = st.number_input(
-                    "Employee ID",
-                    min_value=0,
-                    key="delete_employee"
+                    "Employee ID", min_value=0, key="delete_employee"
                 )
 
                 if "show_delete_section" not in st.session_state:
@@ -667,7 +634,7 @@ def main_dashboard():
 
                 url = f"{employee_url}/employee_by_id/{emp_id_delete}"
                 delete_url = f"{employee_url}/delete_employee/{emp_id_delete}"
-                
+
                 if st.button("Remove"):
                     response = requests.get(url)
 
@@ -686,34 +653,28 @@ def main_dashboard():
                     c1, c2 = st.columns(2)
                     with c1:
                         st.text_input(
-                            "Name",
-                            value=employee.get("name", ""),
-                            disabled=True
+                            "Name", value=employee.get("name", ""), disabled=True
                         )
                         st.text_input(
-                            "City",
-                            value=employee.get("city", ""),
-                            disabled=True
+                            "City", value=employee.get("city", ""), disabled=True
                         )
                         st.number_input(
                             "Salary",
                             value=int(employee.get("salary", 0)),
-                            disabled=True
+                            disabled=True,
                         )
                     with c2:
                         st.text_input(
-                            "Email",
-                            value=employee.get("email", ""),
-                            disabled=True
+                            "Email", value=employee.get("email", ""), disabled=True
                         )
                         st.text_input(
                             "Department",
                             value=employee.get("department", ""),
-                            disabled=True
+                            disabled=True,
                         )
-                        
+
                     st.markdown("</div>", unsafe_allow_html=True)
-                    
+
                     if st.button("Delete Employee"):
                         result = requests.delete(delete_url)
 
@@ -724,26 +685,24 @@ def main_dashboard():
                         else:
                             st.error("Delete Failed")
                             st.write(result.json())
-                                    
+
             elif choice == "Reports":
                 API_URL = f"{employee_url}/get_pdf_data"
 
                 st.markdown(
-                                """
+                    """
                                 <div class="glass-card">
                                     <div class="section-title">
                                         Employee Reports
                                     </div>
                                 """,
-                                unsafe_allow_html=True
-                            )
+                    unsafe_allow_html=True,
+                )
 
-                st.write(
-                            "Generate employee reports in PDF format."
-                        )            
+                st.write("Generate employee reports in PDF format.")
                 if st.button("Download Employee PDF"):
                     response = requests.get(API_URL)
-                    
+
                     if response.status_code == 200:
                         st.download_button(
                             label="Click Here to Download",
@@ -768,37 +727,26 @@ def main_dashboard():
                         Browse Employees
                     </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             c1, c2, c3 = st.columns([1, 1, 2])
 
             with c1:
                 per_page = st.selectbox(
-                    "Employees Per Page",
-                    options=[5, 10, 15, 20],
-                    index=1
+                    "Employees Per Page", options=[5, 10, 15, 20], index=1
                 )
 
             with c2:
-                st.metric(
-                    "Current Page",
-                    st.session_state.employee_page
-                )
+                st.metric("Current Page", st.session_state.employee_page)
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-            params = {
-                "page": st.session_state.employee_page,
-                "per_page": per_page
-            }
+            params = {"page": st.session_state.employee_page, "per_page": per_page}
 
             get_url = f"{employee_url}/show_employee"
 
-            response = requests.get(
-                get_url,
-                params=params
-            )
+            response = requests.get(get_url, params=params)
 
             st.markdown(
                 """
@@ -807,7 +755,7 @@ def main_dashboard():
                         Employee Records
                     </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             if response.status_code == 200:
@@ -822,11 +770,7 @@ def main_dashboard():
 
                         df = pd.DataFrame(employees)
 
-                        st.dataframe(
-                            df,
-                            use_container_width=True,
-                            hide_index=True
-                        )
+                        st.dataframe(df, use_container_width=True, hide_index=True)
 
                     else:
                         st.warning("No employees found.")
@@ -842,10 +786,7 @@ def main_dashboard():
             prev_col, center_col, next_col = st.columns([1, 2, 1])
 
             with prev_col:
-                if st.button(
-                    "⬅ Previous",
-                    use_container_width=True
-                ):
+                if st.button("⬅ Previous", use_container_width=True):
                     if st.session_state.employee_page > 1:
                         st.session_state.employee_page -= 1
                         st.rerun()
@@ -862,312 +803,252 @@ def main_dashboard():
                         Page {st.session_state.employee_page}
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
 
             with next_col:
-                if st.button(
-                    "Next ➝",
-                    use_container_width=True
-                ):
+                if st.button("Next ➝", use_container_width=True):
                     st.session_state.employee_page += 1
                     st.rerun()
 
         with tab4:
-                st.title("Search Employee")
+            st.title("Search Employee")
 
-                st.markdown("""
+            st.markdown(
+                """
                 <div class="glass-card">
                     <div class="section-title">
                         Search Options
                     </div>
-                """, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True,
+            )
 
-                choice = st.selectbox(
-                    "Search By",
-                    options=[
-                        "By ID",
-                        "By Name",
-                        "Salary Range"
-                    ]
-                )
+            choice = st.selectbox(
+                "Search By", options=["By ID", "By Name", "Salary Range"]
+            )
 
-                st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-                if choice == "By ID":
+            if choice == "By ID":
 
-                    st.markdown("""
+                st.markdown(
+                    """
                     <div class="glass-card">
                         <div class="section-title">
                             Search Employee by ID
                         </div>
-                    """, unsafe_allow_html=True)
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-                    emp_id = st.number_input(
-                        "Employee ID",
-                        min_value=1,
-                        key="search_key"
-                    )
+                emp_id = st.number_input("Employee ID", min_value=1, key="search_key")
 
-                    employee_search_url = (
-                        f"{employee_url}/employee_by_id/{emp_id}"
-                    )
+                employee_search_url = f"{employee_url}/employee_by_id/{emp_id}"
 
-                    if st.button(
-                        "Search Employee",
-                        use_container_width=True
-                    ):
+                if st.button("Search Employee", use_container_width=True):
+
+                    response = requests.get(employee_search_url)
+
+                    if response.status_code == 200:
+
+                        raw_data = response.json()
+
+                        if "Data" in raw_data:
+
+                            employee = raw_data["Data"]
+
+                            st.markdown(
+                                """
+                                <div class="section-title">
+                                    Search Result
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+
+                            df = pd.DataFrame([employee])
+
+                            st.dataframe(df, use_container_width=True, hide_index=True)
+
+                        else:
+                            st.warning("Employee not found")
+
+                    else:
+                        st.error("Failed to fetch employee")
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+            elif choice == "By Name":
+
+                st.markdown(
+                    """
+                    <div class="glass-card">
+                        <div class="section-title">
+                            Search Employee by Name
+                        </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                search_name = st.text_input(
+                    "Employee Name",
+                    placeholder="Enter employee name",
+                    key="search_name_key",
+                ).strip()
+
+                employee_search_url = f"{employee_url}/search_by_name"
+
+                if st.button(
+                    "Search Employee", key="name_search_btn", use_container_width=True
+                ):
+
+                    if not search_name:
+                        st.error("Please enter a name.")
+
+                    else:
 
                         response = requests.get(
-                            employee_search_url
+                            employee_search_url, params={"name": search_name}
                         )
 
                         if response.status_code == 200:
 
                             raw_data = response.json()
 
-                            if "Data" in raw_data:
+                            if "Data" in raw_data and raw_data["Data"]:
 
-                                employee = raw_data["Data"]
+                                employees_list = raw_data["Data"]
 
-                                st.markdown("""
-                                <div class="section-title">
-                                    Search Result
-                                </div>
-                                """, unsafe_allow_html=True)
+                                st.success(f"{len(employees_list)} employee(s) found")
 
-                                df = pd.DataFrame([employee])
+                                df = pd.DataFrame(employees_list)
 
                                 st.dataframe(
-                                    df,
-                                    use_container_width=True,
-                                    hide_index=True
+                                    df, use_container_width=True, hide_index=True
                                 )
 
                             else:
-                                st.warning("Employee not found")
+                                st.warning("No employee found")
+
+                        elif response.status_code == 404:
+                            st.warning("No employee found")
 
                         else:
-                            st.error("Failed to fetch employee")
-
-                    st.markdown("</div>", unsafe_allow_html=True)
-
-                elif choice == "By Name":
-
-                    st.markdown("""
-                    <div class="glass-card">
-                        <div class="section-title">
-                            Search Employee by Name
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                    search_name = st.text_input(
-                        "Employee Name",
-                        placeholder="Enter employee name",
-                        key="search_name_key"
-                    ).strip()
-
-                    employee_search_url = (
-                        f"{employee_url}/search_by_name"
-                    )
-
-                    if st.button(
-                        "Search Employee",
-                        key="name_search_btn",
-                        use_container_width=True
-                    ):
-
-                        if not search_name:
-                            st.error(
-                                "Please enter a name."
-                            )
-
-                        else:
-
-                            response = requests.get(
-                                employee_search_url,
-                                params={
-                                    "name": search_name
-                                }
-                            )
-
-                            if response.status_code == 200:
-
-                                raw_data = response.json()
-
-                                if (
-                                    "Data" in raw_data
-                                    and raw_data["Data"]
-                                ):
-
-                                    employees_list = (
-                                        raw_data["Data"]
-                                    )
-
-                                    st.success(
-                                        f"{len(employees_list)} employee(s) found"
-                                    )
-
-                                    df = pd.DataFrame(
-                                        employees_list
-                                    )
-
-                                    st.dataframe(
-                                        df,
-                                        use_container_width=True,
-                                        hide_index=True
-                                    )
-
-                                else:
-                                    st.warning(
-                                        "No employee found"
-                                    )
-
-                            elif response.status_code == 404:
-                                st.warning(
-                                    "No employee found"
+                            try:
+                                error_msg = response.json().get(
+                                    "Message", response.text
                                 )
+                            except Exception:
+                                error_msg = response.text
 
-                            else:
-                                try:
-                                    error_msg = (
-                                        response.json()
-                                        .get(
-                                            "Message",
-                                            response.text
-                                        )
-                                    )
-                                except Exception:
-                                    error_msg = response.text
+                            st.error(f"Error: {error_msg}")
 
-                                st.error(
-                                    f"Error: {error_msg}"
-                                )
+                st.markdown("</div>", unsafe_allow_html=True)
 
-                    st.markdown("</div>", unsafe_allow_html=True)
+            elif choice == "Salary Range":
 
-                elif choice == "Salary Range":
-
-                    st.markdown("""
+                st.markdown(
+                    """
                     <div class="glass-card">
                         <div class="section-title">
                             Search by Salary Range
                         </div>
-                    """, unsafe_allow_html=True)
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-                    col1, col2 = st.columns(2)
+                col1, col2 = st.columns(2)
 
-                    with col1:
-                        min_salary = st.number_input(
-                            "Minimum Salary",
-                            min_value=0.0,
-                            step=1000.0
-                        )
+                with col1:
+                    min_salary = st.number_input(
+                        "Minimum Salary", min_value=0.0, step=1000.0
+                    )
 
-                    with col2:
-                        max_salary = st.number_input(
-                            "Maximum Salary",
-                            min_value=0.0,
-                            step=1000.0
-                        )
+                with col2:
+                    max_salary = st.number_input(
+                        "Maximum Salary", min_value=0.0, step=1000.0
+                    )
 
-                    if st.button(
-                        "Search Employees",
-                        use_container_width=True
-                    ):
+                if st.button("Search Employees", use_container_width=True):
 
-                        if min_salary > max_salary:
+                    if min_salary > max_salary:
 
-                            st.error(
-                                "Minimum salary cannot be greater than maximum salary"
+                        st.error("Minimum salary cannot be greater than maximum salary")
+
+                    else:
+
+                        try:
+
+                            response = requests.get(
+                                f"{employee_url}/filter_by_salary",
+                                params={
+                                    "min_salary": min_salary,
+                                    "max_salary": max_salary,
+                                },
                             )
 
-                        else:
+                            if response.status_code == 200:
 
-                            try:
+                                result = response.json()
 
-                                response = requests.get(
-                                    f"{employee_url}/filter_by_salary",
-                                    params={
-                                        "min_salary": min_salary,
-                                        "max_salary": max_salary
-                                    }
-                                )
+                                employees = result.get("Data", [])
 
-                                if response.status_code == 200:
+                                if employees:
 
-                                    result = response.json()
+                                    st.success(f"{len(employees)} employee(s) found")
 
-                                    employees = result.get(
-                                        "Data",
-                                        []
+                                    df = pd.DataFrame(employees)
+
+                                    st.dataframe(
+                                        df, use_container_width=True, hide_index=True
                                     )
-
-                                    if employees:
-
-                                        st.success(
-                                            f"{len(employees)} employee(s) found"
-                                        )
-
-                                        df = pd.DataFrame(
-                                            employees
-                                        )
-
-                                        st.dataframe(
-                                            df,
-                                            use_container_width=True,
-                                            hide_index=True
-                                        )
-
-                                    else:
-                                        st.warning(
-                                            "No employees found in this range"
-                                        )
 
                                 else:
-                                    st.error(
-                                        "Failed to fetch data"
-                                    )
+                                    st.warning("No employees found in this range")
 
-                            except Exception as e:
-                                st.error(str(e))
+                            else:
+                                st.error("Failed to fetch data")
 
-                    st.markdown("</div>", unsafe_allow_html=True)
+                        except Exception as e:
+                            st.error(str(e))
+
+                st.markdown("</div>", unsafe_allow_html=True)
 
     elif choice == "Department":
         st.title("Department Management")
-        
+
         department_url = f"{base_url}/department"
         tab1, tab2, tab3 = st.tabs(["Employees", "Manage", "Show All"])
 
         with tab3:
             show_url = f"{department_url}/show_department"
             response = requests.get(show_url)
-            
+
             raw_data = response.json()
-            
+
             if "Data" in raw_data:
                 department = raw_data["Data"]
-                df = pd.DataFrame(department)                                    
-                st.dataframe(df,
-                                use_container_width=True,
-                                hide_index=True,
-                                    column_config={
-                                        "id": st.column_config.NumberColumn(
-                                        "Department ID",
-                                        width="small"
-                                        ),
-                                        "department": st.column_config.TextColumn(
-                                        "Department Name",
-                                        width="large"
-                                        )
-                                    }
-                                )
-                                
+                df = pd.DataFrame(department)
+                st.dataframe(
+                    df,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "id": st.column_config.NumberColumn(
+                            "Department ID", width="small"
+                        ),
+                        "department": st.column_config.TextColumn(
+                            "Department Name", width="large"
+                        ),
+                    },
+                )
+
         with tab2:
             st.title("Department Management")
 
-            st.markdown("""
+            st.markdown(
+                """
                     <style>
 
                     .glass-card{
@@ -1220,121 +1101,93 @@ def main_dashboard():
                     }
 
                     </style>
-                    """, unsafe_allow_html=True)
+                    """,
+                unsafe_allow_html=True,
+            )
 
             dept_choice = st.selectbox(
                 "Select Action",
-                [
-                    "Add Department",
-                    "Update Department",
-                    "Remove Department"
-                ]
+                ["Add Department", "Update Department", "Remove Department"],
             )
 
             st.markdown("</div>", unsafe_allow_html=True)
 
             if dept_choice == "Add Department":
 
-                st.markdown("""
+                st.markdown(
+                    """
                 <div class="glass-card">
                     <div class="section-title">
                         Add Department
                     </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
 
                 name = st.text_input(
                     "Department Name",
                     placeholder="Enter department name",
-                    key="dept_name"
+                    key="dept_name",
                 )
 
-                if st.button(
-                    "Add Department",
-                    use_container_width=True
-                ):
+                if st.button("Add Department", use_container_width=True):
 
-                    full_url = (
-                        f"{department_url}/add_department"
-                    )
+                    full_url = f"{department_url}/add_department"
 
-                    response = requests.post(
-                        full_url,
-                        json={"name": name}
-                    )
+                    response = requests.post(full_url, json={"name": name})
 
                     if response.status_code == 200:
-                        st.success(
-                            f"{name} department added"
-                        )
+                        st.success(f"{name} department added")
                     else:
-                        st.error( "Server Error")
-                        st.write( response.json() )
-                st.markdown(
-                    "</div>",
-                    unsafe_allow_html=True
-                )
+                        st.error("Server Error")
+                        st.write(response.json())
+                st.markdown("</div>", unsafe_allow_html=True)
 
             elif dept_choice == "Update Department":
 
-                st.markdown("""
+                st.markdown(
+                    """
                 <div class="glass-card">
                     <div class="section-title">
                         Update Department
                     </div>
-                """, unsafe_allow_html=True)
-
-                dept_id = st.number_input(
-                    "Department ID",
-                    min_value=1,
-                    step=1
+                """,
+                    unsafe_allow_html=True,
                 )
+
+                dept_id = st.number_input("Department ID", min_value=1, step=1)
 
                 name = st.text_input(
-                    "Department Name",
-                    placeholder="Enter new department name"
+                    "Department Name", placeholder="Enter new department name"
                 )
 
-                update_url = (
-                    f"{department_url}/update_department/{dept_id}"
-                )
+                update_url = f"{department_url}/update_department/{dept_id}"
 
-                if st.button(
-                    "Update Department",
-                    use_container_width=True
-                ):
+                if st.button("Update Department", use_container_width=True):
 
-                    response = requests.put(
-                        update_url,
-                        json={"name": name}
-                    )
+                    response = requests.put(update_url, json={"name": name})
 
                     if response.status_code == 200:
-                        st.success(
-                            "Department updated successfully"
-                        )
+                        st.success("Department updated successfully")
                     else:
-                        st.warning(
-                            "Something went wrong"
-                        )
+                        st.warning("Something went wrong")
 
-                st.markdown(
-                    "</div>",
-                    unsafe_allow_html=True
-                )
+                st.markdown("</div>", unsafe_allow_html=True)
 
             elif dept_choice == "Remove Department":
 
-                st.markdown("""
+                st.markdown(
+                    """
                 <div class="glass-card">
                     <div class="section-title">
                         Remove Department
                     </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
 
                 dept_id = st.number_input(
-                    "Department ID",
-                    min_value=1,
-                    key="remove_dept_key"
+                    "Department ID", min_value=1, key="remove_dept_key"
                 )
 
                 if "show_remove_section" not in st.session_state:
@@ -1343,18 +1196,11 @@ def main_dashboard():
                 if "department_data" not in st.session_state:
                     st.session_state.department_data = None
 
-                fetch_dept = (
-                    f"{base_url}/department/fetch_dept_id/{dept_id}"
-                )
+                fetch_dept = f"{base_url}/department/fetch_dept_id/{dept_id}"
 
-                if st.button(
-                    "Fetch Department",
-                    use_container_width=True
-                ):
+                if st.button("Fetch Department", use_container_width=True):
 
-                    response = requests.get(
-                        fetch_dept
-                    )
+                    response = requests.get(fetch_dept)
 
                     if response.status_code == 200:
 
@@ -1366,90 +1212,60 @@ def main_dashboard():
                             st.session_state.show_remove_section = True
 
                         else:
-                            st.error(
-                                "Department not found"
-                            )
+                            st.error("Department not found")
 
                 if st.session_state.show_remove_section:
 
                     st.markdown("<hr>", unsafe_allow_html=True)
 
-                    department = (
-                        st.session_state.department_data
-                    )
+                    department = st.session_state.department_data
 
-                    st.subheader(
-                        "Department Details"
-                    )
+                    st.subheader("Department Details")
 
                     c1, c2 = st.columns(2)
 
                     with c1:
                         st.text_input(
                             "Department ID",
-                            value=department.get(
-                                "ID",
-                                ""
-                            ),
-                            disabled=True
+                            value=department.get("ID", ""),
+                            disabled=True,
                         )
 
                     with c2:
                         st.text_input(
                             "Department Name",
-                            value=department.get(
-                                "Name",
-                                ""
-                            ),
-                            disabled=True
+                            value=department.get("Name", ""),
+                            disabled=True,
                         )
 
-                    if st.button(
-                        "Delete Department",
-                        use_container_width=True
-                    ):
+                    if st.button("Delete Department", use_container_width=True):
 
                         delete_dept_url = (
-                            f"{department_url}/delete_department/"
-                            f"{department['ID']}"
+                            f"{department_url}/delete_department/" f"{department['ID']}"
                         )
 
-                        result = requests.delete(
-                            delete_dept_url
-                        )
+                        result = requests.delete(delete_dept_url)
 
                         if result.status_code == 200:
 
-                            st.success(
-                                "Department deleted successfully"
-                            )
+                            st.success("Department deleted successfully")
 
                             st.session_state.show_remove_section = False
                             st.session_state.department_data = None
 
                         else:
-                            st.warning(
-                                "Server Error"
-                            )
-                            st.write(
-                                result.json()
-                            )
+                            st.warning("Server Error")
+                            st.write(result.json())
 
-                st.markdown(
-                    "</div>",
-                    unsafe_allow_html=True
-                )
-                            
+                st.markdown("</div>", unsafe_allow_html=True)
+
         with tab1:
             st.title("Department Dashboard")
-            department_dashboard_url = (
-                f"{department_url}/employww_per_deptartment"
-            )
+            department_dashboard_url = f"{department_url}/employww_per_deptartment"
 
-            response = requests.get(
-                department_dashboard_url
-            )
-            st.markdown("""
+            response = requests.get(department_dashboard_url)
+            st.markdown(
+                """
             <style>
             
             div[data-testid="stMetric"]{
@@ -1463,8 +1279,10 @@ def main_dashboard():
             }
             
             </style>
-                        """, unsafe_allow_html=True)
-            
+                        """,
+                unsafe_allow_html=True,
+            )
+
             if response.status_code == 200:
 
                 data = response.json()
@@ -1472,25 +1290,15 @@ def main_dashboard():
                 df = pd.DataFrame(departments)
 
                 total_departments = len(df)
-                total_employees = (
-                    df["Employees"]
-                    .astype(int)
-                    .sum()
-                )
+                total_employees = df["Employees"].astype(int).sum()
 
                 c1, c2 = st.columns(2)
 
                 with c1:
-                    st.metric(
-                        "Total Departments",
-                        total_departments
-                    )
+                    st.metric("Total Departments", total_departments)
 
                 with c2:
-                    st.metric(
-                        "Total Employees",
-                        total_employees
-                    )
+                    st.metric("Total Employees", total_employees)
 
                 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1498,130 +1306,83 @@ def main_dashboard():
 
                 with col1:
 
-                    st.markdown("""
+                    st.markdown(
+                        """
                     <div class="glass-card">
                         <div class="section-title">
                             Employees Per Department
                         </div>
-                    """, unsafe_allow_html=True)
-
-                    chart_df = (
-                        df.set_index("Department")
+                    """,
+                        unsafe_allow_html=True,
                     )
 
-                    fig, ax = plt.subplots(
-                        figsize=(7, 4)
-                    )
+                    chart_df = df.set_index("Department")
+
+                    fig, ax = plt.subplots(figsize=(7, 4))
 
                     fig.patch.set_alpha(0)
                     ax.set_facecolor("none")
 
-                    bars = ax.bar(
-                        chart_df.index,
-                        chart_df["Employees"]
-                    )
+                    bars = ax.bar(chart_df.index, chart_df["Employees"])
 
                     ax.spines["top"].set_visible(False)
                     ax.spines["right"].set_visible(False)
 
-                    ax.grid(
-                        alpha=0.2,
-                        linestyle="--"
-                    )
+                    ax.grid(alpha=0.2, linestyle="--")
 
-                    ax.set_ylabel(
-                        "Employees"
-                    )
+                    ax.set_ylabel("Employees")
 
-                    ax.set_xlabel(
-                        "Department"
-                    )
+                    ax.set_xlabel("Department")
 
-                    ax.tick_params(
-                        axis="x",
-                        rotation=20
-                    )
+                    ax.tick_params(axis="x", rotation=20)
 
-                    st.pyplot(
-                        fig,
-                        use_container_width=True
-                    )
-                    st.markdown(
-                        "</div>",
-                        unsafe_allow_html=True
-                    )
+                    st.pyplot(fig, use_container_width=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
                 with col2:
 
-                    st.markdown("""
+                    st.markdown(
+                        """
                     <div class="glass-card">
                         <div class="section-title">
                             Department Details
                         </div>
-                    """, unsafe_allow_html=True)
-
-                    st.dataframe(
-                        df,
-                        use_container_width=True,
-                        hide_index=True
+                    """,
+                        unsafe_allow_html=True,
                     )
 
-                    st.markdown(
-                        "</div>",
-                        unsafe_allow_html=True
-                    )
+                    st.dataframe(df, use_container_width=True, hide_index=True)
+
+                    st.markdown("</div>", unsafe_allow_html=True)
 
             else:
-                st.error(
-                    "Failed to load dashboard"
-                )
+                st.error("Failed to load dashboard")
 
     elif choice == "Attendance":
 
         st.title("Attendance Tracker")
-        st.caption(
-            "Manage daily employee attendance."
-        )
+        st.caption("Manage daily employee attendance.")
 
         try:
-            response = requests.get(
-                f"{base_url}/attendance/employees"
-            )
+            response = requests.get(f"{base_url}/attendance/employees")
 
             result = response.json()
-            employees = result.get(
-                "Data",
-                []
-            )
+            employees = result.get("Data", [])
 
         except Exception as e:
-            st.error(
-                f"Failed to fetch employees: {e}"
-            )
+            st.error(f"Failed to fetch employees: {e}")
             st.stop()
 
         if not employees:
-            st.warning(
-                "No employees found"
-            )
+            st.warning("No employees found")
             st.stop()
 
-        status_options = [
-            "Present",
-            "Absent",
-            "Sick Leave",
-            "Half Day"
-        ]
+        status_options = ["Present", "Absent", "Sick Leave", "Half Day"]
 
         attendance_records = []
 
-        st.markdown(
-            '<div class="glass-card">',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
-        h1, h2, h3, h4 = st.columns(
-            [0.8, 2, 2, 2]
-        )
+        h1, h2, h3, h4 = st.columns([0.8, 2, 2, 2])
 
         with h1:
             st.markdown("**ID**")
@@ -1636,63 +1397,39 @@ def main_dashboard():
             st.markdown("**Status**")
 
         st.divider()
-        
-        with st.form(
-            "attendance_form"
-        ):
 
-            for i, emp in enumerate(
-                employees
-            ):
+        with st.form("attendance_form"):
 
-                c1, c2, c3, c4 = st.columns(
-                    [0.8, 2, 2, 2]
-                )
+            for i, emp in enumerate(employees):
+
+                c1, c2, c3, c4 = st.columns([0.8, 2, 2, 2])
 
                 with c1:
-                    st.write(
-                        emp["Id"]
-                    )
+                    st.write(emp["Id"])
 
                 with c2:
-                    st.write(
-                        emp["name"]
-                    )
+                    st.write(emp["name"])
 
                 with c3:
-                    st.write(
-                        emp["department"]
-                    )
+                    st.write(emp["department"])
 
                 with c4:
                     status = st.selectbox(
                         "status",
                         status_options,
                         key=f"attendance_{i}",
-                        label_visibility="collapsed"
+                        label_visibility="collapsed",
                     )
 
-                attendance_records.append({
-                    "employee_id":
-                    emp["Id"],
-
-                    "status":
-                    status
-                })
+                attendance_records.append({"employee_id": emp["Id"], "status": status})
 
             st.divider()
 
-            submit = (
-                st.form_submit_button(
-                    "Submit Attendance",
-                    use_container_width=True
-                )
+            submit = st.form_submit_button(
+                "Submit Attendance", use_container_width=True
             )
 
-        st.markdown(
-            "</div>",
-            unsafe_allow_html=True
-        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
         if submit:
             success_count = 0
@@ -1704,21 +1441,12 @@ def main_dashboard():
                     response = requests.post(
                         f"{base_url}/attendance/mark",
                         json={
-                            "employee_id":
-                            record[
-                                "employee_id"
-                            ],
-                            "status":
-                            record[
-                                "status"
-                            ]
-                        }
+                            "employee_id": record["employee_id"],
+                            "status": record["status"],
+                        },
                     )
 
-                    if response.status_code in [
-                        200,
-                        201
-                    ]:
+                    if response.status_code in [200, 201]:
                         success_count += 1
                     else:
                         failed_count += 1
@@ -1726,27 +1454,20 @@ def main_dashboard():
                 c1, c2 = st.columns(2)
 
                 with c1:
-                    st.metric(
-                        "Submitted",
-                        success_count
-                    )
+                    st.metric("Submitted", success_count)
 
                 with c2:
-                    st.metric(
-                        "Failed",
-                        failed_count
-                    )
+                    st.metric("Failed", failed_count)
 
-                st.success(
-                    "Attendance submitted successfully"
-                )
+                st.success("Attendance submitted successfully")
 
             except Exception as e:
                 st.error(str(e))
 
     elif choice == "Salary":
 
-                st.markdown("""
+        st.markdown(
+            """
                 <style>
 
                 .salary-title{
@@ -1820,61 +1541,55 @@ def main_dashboard():
                 }
 
                 </style>
-                """, unsafe_allow_html=True)
+                """,
+            unsafe_allow_html=True,
+        )
 
-                st.markdown(
-                    '<div class="salary-title">Salary Analysis</div>',
-                    unsafe_allow_html=True
-                )
+        st.markdown(
+            '<div class="salary-title">Salary Analysis</div>', unsafe_allow_html=True
+        )
 
-                tab1, tab2, tab3 = st.tabs(
-                    ["Generate Payroll", "View Payroll", "Yearly Bonus"]
-                )
+        tab1, tab2, tab3 = st.tabs(["Generate Payroll", "View Payroll", "Yearly Bonus"])
 
-                with tab1:
+        with tab1:
 
-                    st.markdown("""
+            st.markdown(
+                """
                     <div class="glass-card">
                         <h3 style="color:white;">
                             Generate Monthly Payroll
                         </h3>
-                    """, unsafe_allow_html=True)
+                    """,
+                unsafe_allow_html=True,
+            )
 
-                    employee_id = st.number_input(
-                        "Enter Employee ID",
-                        min_value=1,
-                        step=1,
-                        key="generate_payroll"
+            employee_id = st.number_input(
+                "Enter Employee ID", min_value=1, step=1, key="generate_payroll"
+            )
+
+            if st.button("Generate Payroll", use_container_width=True):
+
+                try:
+                    response = requests.post(
+                        f"{base_url}/payroll/generate/{employee_id}"
                     )
 
-                    if st.button(
-                        "Generate Payroll",
-                        use_container_width=True
-                    ):
+                    result = response.json()
 
-                        try:
-                            response = requests.post(
-                                f"{base_url}/payroll/generate/{employee_id}"
-                            )
+                    if response.status_code in [200, 201]:
 
-                            result = response.json()
+                        data = result.get("Data", {})
 
-                            if response.status_code in [200, 201]:
+                        st.success(
+                            result.get("Message", "Payroll generated successfully")
+                        )
 
-                                data = result.get("Data", {})
+                        col1, col2 = st.columns(2)
 
-                                st.success(
-                                    result.get(
-                                        "Message",
-                                        "Payroll generated successfully"
-                                    )
-                                )
+                        with col1:
 
-                                col1, col2 = st.columns(2)
-
-                                with col1:
-
-                                    st.markdown(f"""
+                            st.markdown(
+                                f"""
                                     <div class="metric-card">
                                         <div class="metric-title">
                                             Employee
@@ -1910,11 +1625,14 @@ def main_dashboard():
                                             {data.get("Attendance Percentage",0)}%
                                         </div>
                                     </div>
-                                    """, unsafe_allow_html=True)
+                                    """,
+                                unsafe_allow_html=True,
+                            )
 
-                                with col2:
+                        with col2:
 
-                                    st.markdown(f"""
+                            st.markdown(
+                                f"""
                                     <div class="metric-card">
                                         <div class="metric-title">
                                             Present Days
@@ -1950,9 +1668,12 @@ def main_dashboard():
                                             ₹ {data.get("Bonus",0)}
                                         </div>
                                     </div>
-                                    """, unsafe_allow_html=True)
+                                    """,
+                                unsafe_allow_html=True,
+                            )
 
-                                st.markdown(f"""
+                        st.markdown(
+                            f"""
                                 <div class="salary-box">
                                     <div class="salary-text">
                                         Final Salary
@@ -1961,66 +1682,58 @@ def main_dashboard():
                                         ₹ {data.get("Final Salary",0)}
                                     </div>
                                 </div>
-                                """, unsafe_allow_html=True)
+                                """,
+                            unsafe_allow_html=True,
+                        )
 
-                            else:
-                                st.error(
-                                    result.get(
-                                        "Message",
-                                        "Failed to generate payroll"
-                                    )
-                                )
+                    else:
+                        st.error(result.get("Message", "Failed to generate payroll"))
 
-                        except Exception as e:
-                            st.error(str(e))
+                except Exception as e:
+                    st.error(str(e))
 
-                    st.markdown("</div>", unsafe_allow_html=True)
-                         
-                with tab2:
+            st.markdown("</div>", unsafe_allow_html=True)
 
-                    st.markdown("""
+        with tab2:
+
+            st.markdown(
+                """
                     <div class="glass-card">
                         <h3 style="color:white;">
                             View Employee Payroll
                         </h3>
-                    """, unsafe_allow_html=True)
+                    """,
+                unsafe_allow_html=True,
+            )
 
-                    employee_id = st.number_input(
-                        "Enter Employee ID",
-                        min_value=1,
-                        step=1,
-                        key="view_payroll"
+            employee_id = st.number_input(
+                "Enter Employee ID", min_value=1, step=1, key="view_payroll"
+            )
+
+            if st.button("Fetch Payroll", use_container_width=True):
+
+                try:
+
+                    response = requests.get(
+                        f"{base_url}/payroll/employee/{employee_id}"
                     )
 
-                    if st.button(
-                        "Fetch Payroll",
-                        use_container_width=True
-                    ):
+                    result = response.json()
 
-                        try:
+                    if response.status_code == 200:
 
-                            response = requests.get(
-                                f"{base_url}/payroll/employee/{employee_id}"
-                            )
+                        data = result.get("Data", {})
 
-                            result = response.json()
+                        st.success(
+                            result.get("Message", "Payroll fetched successfully")
+                        )
 
-                            if response.status_code == 200:
+                        col1, col2 = st.columns(2)
 
-                                data = result.get("Data", {})
+                        with col1:
 
-                                st.success(
-                                    result.get(
-                                        "Message",
-                                        "Payroll fetched successfully"
-                                    )
-                                )
-
-                                col1, col2 = st.columns(2)
-
-                                with col1:
-
-                                    st.markdown(f"""
+                            st.markdown(
+                                f"""
                                     <div class="metric-card">
                                         <div class="metric-title">
                                             Employee
@@ -2047,11 +1760,14 @@ def main_dashboard():
                                             {data.get("Month","N/A")}
                                         </div>
                                     </div>
-                                    """, unsafe_allow_html=True)
+                                    """,
+                                unsafe_allow_html=True,
+                            )
 
-                                with col2:
+                        with col2:
 
-                                    st.markdown(f"""
+                            st.markdown(
+                                f"""
                                     <div class="metric-card">
                                         <div class="metric-title">
                                             Salary
@@ -2078,9 +1794,12 @@ def main_dashboard():
                                             ₹ {data.get("Bonus",0)}
                                         </div>
                                     </div>
-                                    """, unsafe_allow_html=True)
+                                    """,
+                                unsafe_allow_html=True,
+                            )
 
-                                st.markdown(f"""
+                        st.markdown(
+                            f"""
                                 <div class="salary-box">
                                     <div class="salary-text">
                                         Final Salary
@@ -2089,66 +1808,56 @@ def main_dashboard():
                                         ₹ {data.get("Final Salary",0)}
                                     </div>
                                 </div>
-                                """, unsafe_allow_html=True)
+                                """,
+                            unsafe_allow_html=True,
+                        )
 
-                            else:
-                                st.error(
-                                    result.get(
-                                        "Message",
-                                        "Payroll not found"
-                                    )
-                                )
+                    else:
+                        st.error(result.get("Message", "Payroll not found"))
 
-                        except Exception as e:
-                            st.error(str(e))
+                except Exception as e:
+                    st.error(str(e))
 
-                    st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-                with tab3:
+        with tab3:
 
-                    st.markdown("""
+            st.markdown(
+                """
                     <div class="glass-card">
                         <h3 style="color:white;">
                             Yearly Bonus Report
                         </h3>
-                    """, unsafe_allow_html=True)
+                    """,
+                unsafe_allow_html=True,
+            )
 
-                    employee_id = st.number_input(
-                        "Enter Employee ID",
-                        min_value=1,
-                        step=1,
-                        key="yearly_bonus"
+            employee_id = st.number_input(
+                "Enter Employee ID", min_value=1, step=1, key="yearly_bonus"
+            )
+
+            if st.button("Fetch Bonus Report", use_container_width=True):
+
+                try:
+
+                    response = requests.get(
+                        f"{base_url}/payroll/yearly_bonus/{employee_id}"
                     )
 
-                    if st.button(
-                        "Fetch Bonus Report",
-                        use_container_width=True
-                    ):
+                    result = response.json()
 
-                        try:
+                    if response.status_code == 200:
 
-                            response = requests.get(
-                                f"{base_url}/payroll/yearly_bonus/{employee_id}"
-                            )
+                        data = result.get("Data", {})
 
-                            result = response.json()
+                        st.success(result.get("Message", "Bonus report fetched"))
 
-                            if response.status_code == 200:
+                        col1, col2 = st.columns(2)
 
-                                data = result.get("Data", {})
+                        with col1:
 
-                                st.success(
-                                    result.get(
-                                        "Message",
-                                        "Bonus report fetched"
-                                    )
-                                )
-
-                                col1, col2 = st.columns(2)
-
-                                with col1:
-
-                                    st.markdown(f"""
+                            st.markdown(
+                                f"""
                                     <div class="metric-card">
                                         <div class="metric-title">
                                             Employee
@@ -2166,11 +1875,14 @@ def main_dashboard():
                                             {data.get("Department","N/A")}
                                         </div>
                                     </div>
-                                    """, unsafe_allow_html=True)
+                                    """,
+                                unsafe_allow_html=True,
+                            )
 
-                                with col2:
+                        with col2:
 
-                                    st.markdown(f"""
+                            st.markdown(
+                                f"""
                                     <div class="metric-card">
                                         <div class="metric-title">
                                             Total Yearly Bonus
@@ -2188,51 +1900,38 @@ def main_dashboard():
                                             ₹ {data.get("Total Yearly Salary",0)}
                                         </div>
                                     </div>
-                                    """, unsafe_allow_html=True)
+                                    """,
+                                unsafe_allow_html=True,
+                            )
 
-                                st.markdown(
-                                    """
+                        st.markdown(
+                            """
                                     <h3 style="color:white; margin-top:30px;">
                                         Monthly Payroll History
                                     </h3>
                                     """,
-                                    unsafe_allow_html=True
-                                )
+                            unsafe_allow_html=True,
+                        )
 
-                                monthly_reports = data.get(
-                                    "Monthly Reports",
-                                    []
-                                )
+                        monthly_reports = data.get("Monthly Reports", [])
 
-                                if monthly_reports:
+                        if monthly_reports:
 
-                                    df = pd.DataFrame(
-                                        monthly_reports
-                                    )
+                            df = pd.DataFrame(monthly_reports)
 
-                                    st.dataframe(
-                                        df,
-                                        use_container_width=True,
-                                        hide_index=True
-                                    )
+                            st.dataframe(df, use_container_width=True, hide_index=True)
 
-                                else:
-                                    st.warning(
-                                        "No payroll history found"
-                                    )
+                        else:
+                            st.warning("No payroll history found")
 
-                            else:
-                                st.error(
-                                    result.get(
-                                        "Message",
-                                        "Failed to fetch report"
-                                    )
-                                )
+                    else:
+                        st.error(result.get("Message", "Failed to fetch report"))
 
-                        except Exception as e:
-                            st.error(str(e))
+                except Exception as e:
+                    st.error(str(e))
 
-                    st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
 
 init_session()
 
