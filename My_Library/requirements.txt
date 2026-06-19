@@ -1,9 +1,0 @@
-Flask 
-flask-restx
-flask-sqlalchemy
-werkzeug
-python-dotenv
-mysqlclient
-Flask-Mail
-pandas
-matplotlib
