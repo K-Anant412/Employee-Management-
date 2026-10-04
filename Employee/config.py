@@ -50,9 +50,10 @@ def _build_database_configuration():
             if has_ssl_param and ssl_config is None:
                 ssl_config = {}
                 
-            # Strip parameters that PyMySQL.connect() rejects as top-level kwargs
-            for key in ["ssl-mode", "ssl_mode", "ssl_ca"]:
-                query_params.pop(key, None)
+            # Strip parameters that PyMySQL.connect() rejects as top-level kwargs (case-insensitive)
+            for key in list(query_params.keys()):
+                if key.lower() in ["ssl-mode", "ssl_mode", "ssl_ca", "ssl-ca", "sslmode", "sslca"]:
+                    query_params.pop(key, None)
                 
             # Reconstruct clean URI string without unsupported query parameters
             clean_query = urlencode(query_params, doseq=True)
