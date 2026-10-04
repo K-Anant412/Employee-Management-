@@ -12,6 +12,9 @@ class config:
         # Standardize mysql:// to mysql+pymysql:// for SQLAlchemy PyMySQL driver compatibility
         if database_url.startswith("mysql://"):
             database_url = database_url.replace("mysql://", "mysql+pymysql://", 1)
+        # Standardize ssl-mode= (hyphen) to ssl_mode= (underscore) for PyMySQL driver compatibility
+        if "ssl-mode=" in database_url:
+            database_url = database_url.replace("ssl-mode=", "ssl_mode=")
         SQLALCHEMY_DATABASE_URI = database_url
     else:
         # Construct from individual environment variables with defaults
