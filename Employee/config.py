@@ -5,15 +5,18 @@ from urllib.parse import quote_plus, urlparse, parse_qs, urlencode, urlunparse
 
 load_dotenv()
 
-class config:
-    # 1. Determine SSL configuration for PyMySQL
+def _build_database_configuration():
+    """
+    Parses DATABASE_URL or constructs it from DB_* environment variables.
+    Strips invalid PyMySQL query parameters (e.g. ssl-mode, ssl_mode) from URI
+    and configures PyMySQL-compatible SSL options inside connect_args.
+    """
     db_ssl = os.getenv("DB_SSL", "false").lower() == "true"
     db_ssl_ca_env = os.getenv("DB_SSL_CA") or os.getenv("AIVEN_CA_CERT")
     
     ssl_config = None
     
     if db_ssl_ca_env:
-        # If CA Certificate PEM string is provided via environment variable
         ca_file_path = os.getenv("DB_SSL_CA_PATH")
         if not ca_file_path:
             temp_ca = tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".pem")
@@ -22,10 +25,8 @@ class config:
             ca_file_path = temp_ca.name
         ssl_config = {"ca": ca_file_path}
     elif db_ssl:
-        # Default SSL/TLS for cloud MySQL (e.g. Aiven)
         ssl_config = {}
 
-    # 2. Direct DATABASE_URL handling
     database_url = os.getenv("DATABASE_URL")
     
     if database_url:
@@ -39,7 +40,13 @@ class config:
             query_params = parse_qs(parsed_url.query)
             
             # Check if SSL was requested via URL query string
-            has_ssl_param = any(k in query_params for k in ["ssl-mode", "ssl_mode", "ssl_ca", "ssl"])
+            ssl_param_keys = ["ssl-mode", "ssl_mode", "ssl_ca", "ssl"]
+            has_ssl_param = False
+            for key in ssl_param_keys:
+                if key in query_params:
+                    has_ssl_param = True
+                    break
+                    
             if has_ssl_param and ssl_config is None:
                 ssl_config = {}
                 
@@ -47,7 +54,7 @@ class config:
             for key in ["ssl-mode", "ssl_mode", "ssl_ca"]:
                 query_params.pop(key, None)
                 
-            # Reconstruct clean URI string
+            # Reconstruct clean URI string without unsupported query parameters
             clean_query = urlencode(query_params, doseq=True)
             database_url = urlunparse((
                 parsed_url.scheme,
@@ -58,7 +65,7 @@ class config:
                 parsed_url.fragment
             ))
             
-        SQLALCHEMY_DATABASE_URI = database_url
+        db_uri = database_url
     else:
         # Construct from individual environment variables with defaults
         db_user = os.getenv("DB_USER", "root")
@@ -68,18 +75,26 @@ class config:
         db_port = os.getenv("DB_PORT", "3306")
         db_database = os.getenv("DB_NAME", "employee_management")
         
-        SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
+        db_uri = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
         
-    # Configure PyMySQL-compatible SSL connect_args via SQLAlchemy Engine Options
+    # Apply PyMySQL-compatible SSL connect_args via SQLAlchemy Engine Options
+    engine_options = {}
     if ssl_config is not None:
-        SQLALCHEMY_ENGINE_OPTIONS = {
+        engine_options = {
             "connect_args": {
                 "ssl": ssl_config
             }
         }
-    else:
-        SQLALCHEMY_ENGINE_OPTIONS = {}
+        
+    return db_uri, engine_options
 
+
+_db_uri, _engine_options = _build_database_configuration()
+
+
+class config:
+    SQLALCHEMY_DATABASE_URI = _db_uri
+    SQLALCHEMY_ENGINE_OPTIONS = _engine_options
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY", "prod-secure-ems-secret-key-2026")
 
@@ -91,4 +106,4 @@ class config:
     MAIL_DEBUG = os.getenv("FLASK_ENV") == "development"
     MAIL_USERNAME = os.getenv("MAIL_USERNAME", "")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "")
-    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
