@@ -15,6 +15,8 @@ from Services.mail_extension import mail
 from Modules.employee_module import Employee
 from Modules.attendance_module import Attendance
 
+from sqlalchemy import text
+
 app = Flask(__name__)
 
 # Apply production configuration
@@ -29,9 +31,13 @@ db.init_app(app)
 
 with app.app_context():
     try:
+        # Verify database connection and initialize tables
+        db.session.execute(text("SELECT 1"))
         db.create_all()
+        print("[DB SUCCESS] Database connection established and tables verified successfully.")
     except Exception as e:
-        print(f"[Warning] Database initialization warning: {e}")
+        print(f"[DB ERROR] Database initialization failed: {e}")
+        raise e
 
 # Health check route for cloud platform uptime monitoring (e.g. Render)
 @app.route("/health", methods=["GET"])
